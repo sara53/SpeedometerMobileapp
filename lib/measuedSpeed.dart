@@ -18,7 +18,7 @@ class MeasuredSpeed extends StatelessWidget {
               ),
             
            
-              Text(measuredSpeed().toString(),
+              Text(measuredSpeed(),
               style: TextStyle(
                 fontSize: 30,
                 color: Colors.green

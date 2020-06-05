@@ -1,7 +1,4 @@
 
-
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'currentSpeed.dart';
 import 'measuedSpeed.dart';
@@ -31,6 +28,7 @@ String getSpeed = "";
   
     @override
     void initState() {
+      //updateLocation();
       super.initState();
   
       _geolocator = Geolocator();
@@ -44,16 +42,49 @@ String getSpeed = "";
           });
     }
   
+  var renderTime = "";
+  var renderTime2 = "";
+
+    
+    Stopwatch _time = new Stopwatch();
     void updateLocation() async {
       try {
 
         Position newPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 
-  
+        
+   
         setState(() {
+          
           _position = newPosition;
-          getSpeed = (_position.speed/3.6).toStringAsFixed(10);
+          getSpeed = (_position.speed*3.6).toStringAsFixed(10);
+
+        
+          if((_position.speed*3.6) >= 10.0 && (_position.speed*3.6) <= 30.0){
+            _time.start();
+            print(_position.speed*3.6);
+            
+           renderTime= (_time.elapsedMilliseconds * 0.001).toString(); 
+          
+          }
+           if((_position.speed*3.6) >= 30.0 || (_position.speed*3.6)<=10){
+             _time.reset();
+           }
+
+
+          if((_position.speed*3.6) == 30.0){
+            if((_position.speed*3.6) <=10.0){
+              _time.start();
+              renderTime2= (_time.elapsedMilliseconds * 0.001).toString(); 
+            }
+          }
+
+        
+
+
+
         });
+
       } catch (e) {
         print('Error: ${e.toString()}');
       }
@@ -63,54 +94,14 @@ String getSpeed = "";
 
 
 
-double measuredSpeedFrom30To10(){
-
-double v0 = 0.0;
-double  a =  0.0;
-double time = 0.0;
- Timer(Duration(seconds: 1),(){
-        
-       
-        var vt = (_position.speed/3.6);
-        var deltaV = (vt-v0);
-        v0 = vt;
-         a = deltaV/(1);
-        
-        if(a>0.0){
-         int deltaGoal = (30 - 10);
-         time = deltaGoal / a;
-        }
-        
-
-     }
-);
-
-  return  time;
+String measuredSpeedFrom30To10(){
+  return renderTime; 
 }
 
-double measuredSpeedFrom10To30(){
+String measuredSpeedFrom10To30(){
 
-
-double v0 = 0.0;
-double  a =  0.0;
-double time = 0.0;
- Timer(Duration(seconds: 1),(){
-        
-        
-        var vt = (_position.speed/3.6);
-        var deltaV = (vt-v0);
-        v0 = vt;
-         a = deltaV/(1);
-        if(a<0.0){
-         int deltaGoal = (10 - 30);
-         time = deltaGoal / a;
-        }
-        
-
-     }
-);
-
-  return  time;
+  
+  return renderTime2; //time;
   
 }
  
@@ -118,7 +109,7 @@ double time = 0.0;
   @override
   Widget build(BuildContext context) {
     //getCurrentLocation();
-    updateLocation();
+   updateLocation();
     return Scaffold(
       
       body: Container(
